@@ -1,3 +1,6 @@
+#ifndef DISPLAY_H
+#define DISPLAY_H
+
 /*
  * display.h -- System independent definitions needed for graphics
  *				display in the Prototype Manchester Mark I simulator.
@@ -34,3 +37,5 @@ typedef struct {
 #define S_Y		12
 
 extern MONITOR_TUBE monitors[];
+
+#endif /* DISPLAY_H */
