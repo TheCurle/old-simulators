@@ -1,3 +1,6 @@
+#ifndef KEYBOARD_H
+#define KEYBOARD_H
+
 /*
  * keyboard.h -- System dependent definitions needed for 
  *				 use of the keyboard in "editing" programs
@@ -25,3 +28,5 @@
  */
 #define next_cmd()	getch()			    /* get character/cmd from keyboard */
 #define cmd_ready() (kbhit())	/* has a key been pressed? */
+
+#endif /* KEYBOARD_H */

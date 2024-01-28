@@ -1,3 +1,6 @@
+#ifndef PROTO_H
+#define PROTO_H
+
 /* arith.c */
 void subtract(ADDR s);
 /* control.c */
@@ -40,3 +43,5 @@ int main(int argc,char *argv[]);
 /* memory.c */
 void load_negative(ADDR s);
 void store_accumulator(ADDR s);
+
+#endif /* PROTO_H */

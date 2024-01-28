@@ -1,3 +1,6 @@
+#ifndef GRAPHICS_H
+#define GRAPHICS_H
+
 /*
  * graphics.h -- System dependent definitions needed for graphics display
  *				 in Prototype Manchester Mark I simulator.
@@ -54,3 +57,6 @@
 #define show_label(x, y, label)			\
 				scr_curs(x, y),	\
 				 scr_puts(label)
+
+
+#endif /* GRAPHICS_H */
