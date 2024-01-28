@@ -40,4 +40,5 @@ display_line(int16_t tube, ADDR line)
 	set_up_line(monitors[tube].mt_val[line]);
 	show_line(monitors[tube].mt_x,
 			  monitors[tube].mt_y + line);
+	fflush(stdout);
 }
