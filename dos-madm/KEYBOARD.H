@@ -14,13 +14,14 @@
 #define TOGGLE_CMD	' '			/* space bar to toggle the current bit */
 #define QUIT_CMD	'\033'		/* ESC to leave simulator */
 
-#define UP_CMD		'\310'		/* Up arrow key on IBM/PC */
-#define DOWN_CMD	'\320'		/* Down arrow key on IBM/PC */
-#define RIGHT_CMD	'\315'		/* Right arrow key on IBM/PC */
-#define LEFT_CMD	'\313'		/* Left arrow key on IBM/PC */
+#define CONTROL_CMD 224     /* Windows: Another code will follow for the arrow key.*/
+#define UP_CMD		72		/* Up arrow key on Windows */
+#define DOWN_CMD	80		/* Down arrow key on Windows */
+#define RIGHT_CMD	77		/* Right arrow key on Windows */
+#define LEFT_CMD	75		/* Left arrow key on Windows */
 
 /* 
  * use Aztec C keyboard functions for echo-free input & polling
  */
-#define next_cmd()	scr_getc()			/* get character/cmd from keyboard */
-#define cmd_ready() (scr_poll() != -1)	/* has a key been pressed? */
+#define next_cmd()	getch()			    /* get character/cmd from keyboard */
+#define cmd_ready() (kbhit())	/* has a key been pressed? */

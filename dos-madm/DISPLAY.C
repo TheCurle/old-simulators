@@ -23,17 +23,11 @@ MONITOR_TUBE monitors[NUM_MONITORS] = {
  *				  significant bit on the left (backwards binary).
  */
 void
-display_bit(tube, line, bit)
-int tube;
-ADDR line;
-unsigned bit;
+display_bit(int16_t tube, ADDR line, uint16_t bit)
 {
-	blob((int)(monitors[tube].mt_val[line] >> bit) & 0x1,
-		 monitors[tube].mt_x + bit * (BLOB_WIDTH + H_SPACE)
-							+ (bit/4) * XH_SPACE
-							+ (bit/16) * (2 * XH_SPACE),
-		 monitors[tube].mt_y - line * (BLOB_HEIGHT + V_SPACE)
-							- (line/4) * XV_SPACE);
+	scr_curs(S_X + bit, S_Y + line);
+
+	printf("\033[7m%s\033[0m", ((int16_t)(monitors[tube].mt_val[line] >> bit) & 0x1) ? "#" : ".");
 }
 
 /*
@@ -41,12 +35,9 @@ unsigned bit;
  *				   given monitor "tube".
  */
 void
-display_line(tube, line)
-int tube;
-ADDR line;
+display_line(int16_t tube, ADDR line)
 {
 	set_up_line(monitors[tube].mt_val[line]);
 	show_line(monitors[tube].mt_x,
-			  monitors[tube].mt_y - line * (BLOB_HEIGHT + V_SPACE)
-			  					  - (line/4) * XV_SPACE);
+			  monitors[tube].mt_y + line);
 }

@@ -9,7 +9,7 @@
 #include "display.h"
 #include "proto.h"
 
-static int Demo = 0;	/* flag will be non-zero if demo is desired */
+static int16_t Demo = 0;	/* flag will be non-zero if demo is desired */
 
 /*
  * Code for Kilburn's Highest Factor Routine
@@ -67,7 +67,6 @@ initialize()
 	}
 
 	set_up_graphics();
-
 	display_line(A_TUBE, A_LINE);
 
 	for (line = 0; line < CONTROL_SIZE; line++)
@@ -75,7 +74,6 @@ initialize()
 
 	for (line = 0; line < STORE_SIZE; line++)
 		display_line(S_TUBE, line);
-
 }
 
 /*
@@ -93,9 +91,7 @@ clean_up()
  *					  the demo program) is supported.
  */
 void
-process_options(argc, argv)
-int argc;
-char *argv[];
+process_options(int argc, char* argv[])
 {
 	int i;
 

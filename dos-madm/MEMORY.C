@@ -12,8 +12,7 @@
  *					into the accumulator
  */
 void
-load_negative(s)
-ADDR s;
+load_negative(ADDR s)
 {
 	Accumulator[A_LINE] = -Store[s];
 	display_line(A_TUBE, A_LINE);
@@ -23,8 +22,7 @@ ADDR s;
  * store_accumulator -- store the number in the accumulator into line "s"
  */
 void
-store_accumulator(s)
-ADDR s;
+store_accumulator(ADDR s)
 {
 	Store[s] = Accumulator[A_LINE];
 	display_line(S_TUBE, s);

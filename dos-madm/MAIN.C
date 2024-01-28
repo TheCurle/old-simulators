@@ -6,9 +6,7 @@
 #include "madm.h"
 #include "proto.h"
 
-main(argc, argv)
-int argc;
-char *argv[];
+main(int argc, char* argv[])
 {
 	process_options(argc, argv);
 	initialize();
@@ -16,5 +14,5 @@ char *argv[];
 	while (edit())
 		execute();
 
-	clean_up();
+	//clean_up();
 }

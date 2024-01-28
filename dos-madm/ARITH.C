@@ -13,8 +13,7 @@
  *			   from the accumulator
  */
 void
-subtract(s)
-ADDR s;
+subtract(ADDR s)
 {
 	Accumulator[A_LINE] -= Store[s];
 	display_line(A_TUBE, A_LINE);

@@ -12,8 +12,7 @@
  * stop -- Stop the machine.
  */
 void
-stop(s)
-ADDR s;
+stop(ADDR s)
 {
 	MADM_status = STOPPED;
 }
@@ -22,8 +21,7 @@ ADDR s;
  * unused -- unknown operation (null instruction assumed)
  */
 void
-unused(s)
-ADDR s;
+unused(ADDR s)
 {}
 
 /*
@@ -31,8 +29,7 @@ ADDR s;
  *		   less than zero.
  */
 void
-test(s)
-ADDR s;
+test(ADDR s)
 {
 	if (Accumulator[A_LINE] < 0)
 		++Control[CI_LINE];
@@ -42,8 +39,7 @@ ADDR s;
  * jump -- replace the C.I. with the number in line "s"
  */
 void
-jump(s)
-ADDR s;
+jump(ADDR s)
 {
 	Control[CI_LINE] = Store[s];
 	display_line(C_TUBE, CI_LINE);
@@ -53,8 +49,7 @@ ADDR s;
  * rjump -- add the number in line "s" to the C.I.
  */
 void
-rjump(s)
-ADDR s;
+rjump(ADDR s)
 {
 	Control[CI_LINE] += Store[s];
 	display_line(C_TUBE, CI_LINE);

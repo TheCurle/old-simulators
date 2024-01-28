@@ -11,12 +11,12 @@
  * LW	06/17/89
  */
 
-#define	H_DOTS		  320		/* horizontal resolution of screen */
-#define	V_DOTS		  200		/* vertical resolution of screen */
+#define	H_DOTS		  40		/* horizontal resolution of screen */
+#define	V_DOTS		  20		/* vertical resolution of screen */
 
-#define DOTS_PER_BYTE	4		/* # of pixels in each screen byte */
+#define DOTS_PER_BYTE	1		/* # of pixels in each screen byte */
 
-#define	BLOB_WIDTH		2		/* horz size of blob in dots */
+#define	BLOB_WIDTH		1		/* horz size of blob in dots */
 #define	BLOB_HEIGHT		1		/* vert size of blob in dots */
 
 #define	H_SPACE			2		/* horz dots between blobs */
@@ -38,10 +38,19 @@
 #define CHAR_WIDTH		8		/* width of displayed char in pixels */
 #define CHAR_HEIGHT		8		/* height of displayed char in pixels */
 
-#define NUM_ROWS		(V_DOTS / CHAR_HEIGHT)
-#define NUM_COLS		(H_DOTS / CHAR_WIDTH)
+#define NUM_ROWS		(V_DOTS)
+#define NUM_COLS		(H_DOTS)
+
+#define set_cursor(x, y) \
+	printf("\033[%d;%dH", (y), (x))
+
+#define scr_curs(x, y) \
+	printf("\033[%d;%dH", (y), (x))
+
+#define scr_puts(str) \
+	printf("%s", str)
 
 /* "function" to display a string at given coordinates */
 #define show_label(x, y, label)			\
-				(scr_curs(NUM_ROWS-1-((y)/CHAR_HEIGHT), (x)/CHAR_WIDTH),	\
-				 scr_puts(label))
+				scr_curs(x, y),	\
+				 scr_puts(label)

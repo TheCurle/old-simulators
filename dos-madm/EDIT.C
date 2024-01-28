@@ -15,7 +15,7 @@
  *		   Return the value 0 for QUIT (exit the simulator) or
  *		   1 for START (start the program).
  */
-int
+int16_t
 edit()
 {
 	ADDR line;
@@ -57,18 +57,22 @@ edit()
 			toggle_current_bit();
 			display_current_bit();
 			break;
-		case UP_CMD:
-			move_cursor(-1, 0);
-			break;
-		case DOWN_CMD:
-			move_cursor(1, 0);
-			break;
-		case LEFT_CMD:
-			move_cursor(0, -1);
-			break;
-		case RIGHT_CMD:
-			move_cursor(0, 1);
-			break;
+		case CONTROL_CMD:
+			char rd = getch();
+			switch(rd) {
+				case UP_CMD:
+					move_cursor(-1, 0);
+					break;
+				case DOWN_CMD:
+					move_cursor(1, 0);
+					break;
+				case LEFT_CMD:
+					move_cursor(0, -1);
+					break;
+				case RIGHT_CMD:
+					move_cursor(0, 1);
+					break;
+			}
 		}
 
 	}
@@ -80,9 +84,7 @@ edit()
  *				 line ("line") in the store.
  */
 void
-toggle_bit(line, bit)
-ADDR line;
-unsigned bit;
+toggle_bit(ADDR line, uint16_t bit)
 {
 	Store[line] ^= 1L << bit;
 }

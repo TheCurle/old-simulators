@@ -11,15 +11,15 @@
 
 typedef struct {
 	ADDR c_line;		/* current line in store */
-    unsigned c_bit;		/* current bit in line */
-	unsigned c_x,		/* x position of cursor on screen */
+    uint16_t c_bit;		/* current bit in line */
+	uint16_t c_x,		/* x position of cursor on screen */
 			 c_y;		/* y position of cursor on screen */
 } CURSOR;
 
 static CURSOR Cursor = {
 	0, 0,
-	S_X - 1,
-	S_Y - 1
+	S_X,
+	S_Y
 };
 
 /*
@@ -28,9 +28,8 @@ static CURSOR Cursor = {
 void
 show_cursor()
 {
-	draw_box(1, Cursor.c_x, Cursor.c_y,
-				Cursor.c_x+BLOB_WIDTH+1,
-				Cursor.c_y+BLOB_HEIGHT+1);
+	scr_curs(Cursor.c_x, Cursor.c_y);
+	printf("\033[7m%s\033[0m", (Store[Cursor.c_line] & 1L << Cursor.c_bit) ? "#" : ".");
 }
 
 /*
@@ -39,9 +38,8 @@ show_cursor()
 void
 erase_cursor()
 {
-	draw_box(0, Cursor.c_x, Cursor.c_y,
-				Cursor.c_x+BLOB_WIDTH+1,
-				Cursor.c_y+BLOB_HEIGHT+1);
+	scr_curs(Cursor.c_x, Cursor.c_y);
+	printf("\033[0m%s", (Store[Cursor.c_line] & 1L << Cursor.c_bit) ? "#" : ".");
 }
 
 /*
@@ -49,22 +47,15 @@ erase_cursor()
  *				   on a given line ("line") and display it
  *				   at its new position
  */
-void place_cursor(line, bit)
-ADDR line;
-unsigned bit;
+void place_cursor(ADDR line, uint16_t bit)
 {
 	erase_cursor();
 
 	Cursor.c_line = line % STORE_SIZE;
 	Cursor.c_bit  = bit  % LINE_BITS;
 
-	Cursor.c_x = S_X - 1
-					+ Cursor.c_bit * (BLOB_WIDTH + H_SPACE)
-					+ (Cursor.c_bit/4) * XH_SPACE
-					+ (Cursor.c_bit/16) * (2 * XH_SPACE);
-	Cursor.c_y = S_Y - 1
-					- Cursor.c_line * (BLOB_HEIGHT + V_SPACE)
-					- (Cursor.c_line/4) * XV_SPACE;
+	Cursor.c_x = S_X + Cursor.c_bit;
+	Cursor.c_y = S_Y + Cursor.c_line;
 
 	show_cursor();
 }
@@ -75,10 +66,9 @@ unsigned bit;
  *				  ("d_bit")
  */
 void
-move_cursor(d_line, d_bit)
-int d_line, d_bit;
+move_cursor(int16_t d_line, int16_t d_bit)
 {
-	place_cursor(Cursor.c_line + d_line, Cursor.c_bit  + d_bit);
+	place_cursor(Cursor.c_line + d_line, Cursor.c_bit + d_bit);
 }
 
 /*

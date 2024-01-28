@@ -17,6 +17,7 @@
 #include "graphics.h"
 #include "display.h"
 #include "proto.h"
+#include <stdlib.h>
 
 #define odd(n)	((n) & 1)
 
@@ -30,17 +31,20 @@ set_up_graphics()
 	static const char main_title[] = "Manchester Mark I Prototype";
 	static const char sub_title[]  = "(1948)";
 
-	mode('m');		/* IBM/PC 320x200 color graphics mode */
+	clear_graphics();
 
-	show_label((H_DOTS - sizeof(main_title)*CHAR_WIDTH)/2,
-				V_DOTS - 1, main_title);
-	show_label((H_DOTS - sizeof(sub_title)*CHAR_WIDTH)/2,
-				V_DOTS - 1 - CHAR_WIDTH, sub_title);
+	printf("\033[?25l"); // Stop the cursor from running around the screen every time we redraw
+
+	// mode('m');		/* IBM/PC 320x200 color graphics mode */ - set by default
+
+	show_label(19, 1, main_title);
+	show_label(30, 2, sub_title);
 
 	/* note that C & A labels are aligned horizontally */
-	show_label(A_X - CHAR_WIDTH,  C_Y + CHAR_HEIGHT, "A:");
-	show_label(C_X - CHAR_WIDTH,  C_Y + CHAR_HEIGHT, "C:");
-	show_label(S_X - CHAR_WIDTH,  S_Y + CHAR_HEIGHT, "S:");
+	show_label(0,  5, "A:");
+	show_label(35,  5, "C:");
+	show_label(15,  11, "S:");
+
 }
 
 /*
@@ -49,7 +53,7 @@ set_up_graphics()
 void
 clear_graphics()
 {
-	mode('l');		/* IBM/PC 80x25 color text mode */
+	printf("\033[2J");
 }
 
 /*
@@ -59,24 +63,26 @@ clear_graphics()
  *		   Tube memory for the Prototype Mark I).
  */
 void
-blob(value, x, y)
-int value;
-unsigned x, y;
+blob(int16_t value, uint16_t x, uint16_t y)
 {
-	if (value != 0) 
-		color('w');			/* white dashes */
-	else
-		color(0);			/* black background */
+	static char color = 0;
 
-	point(x+1, y);
+	if (value != 0) 
+		color = 97;			/* white dashes */
+	else
+		color = 0;			/* black background */
+
+	scr_curs(x + 1, y);
+	printf("\033[%d;40m⬤\033[0", color);
 
 	if (value == 0)
-		color('r');			/* dots are red (to look dimmer) */
+		color = 31;			/* dots are red (to look dimmer) */
 
-	point(x, y);
+	scr_curs(x, y);
+	printf("\033[%d;40m⬤\033[0", color);
 }
 
-static unsigned char Scan_lines[(LINE_WIDTH+DOTS_PER_BYTE-1)/DOTS_PER_BYTE];
+static unsigned char Scan_lines[(LINE_WIDTH+DOTS_PER_BYTE-1)/DOTS_PER_BYTE + 1];
 
 /*
  * set_up_line -- set up the scan line(s) needed to display a given
@@ -87,25 +93,21 @@ static unsigned char Scan_lines[(LINE_WIDTH+DOTS_PER_BYTE-1)/DOTS_PER_BYTE];
  *				  are divisible by DOTS_PER_BYTE;
  */
 void
-set_up_line(value)
-LINE value;
+set_up_line(LINE value)
 {
-	register unsigned i, byte;
+	register uint16_t i, byte;
 
 	byte = 0;
 
 	for (i = 0; i < LINE_BITS; i++) {
 
-		if (i % 16 == 0)
-			byte += 3 * XH_SPACE / DOTS_PER_BYTE;
-		else if (i % 4 == 0)
-			byte += XH_SPACE / DOTS_PER_BYTE;
-
-		Scan_lines[byte] = (value & 0x1) ? 0xf0 : 0x80;
+		Scan_lines[byte] = (value & 0x1) ? '#' : '.';
 		value >>= 1;
 
-		byte += (BLOB_WIDTH + H_SPACE) / DOTS_PER_BYTE;
+		byte += 1;
 	}
+
+	Scan_lines[32] = '\0';
 
 }
 
@@ -114,21 +116,10 @@ LINE value;
  *				location (x, y) on the screen.
  */
 void
-show_line(x, y)
-unsigned x, y;
+show_line(uint16_t x, uint16_t y)
 {
-	extern unsigned _dsval;		/* segment for static data */
-	register unsigned offset;	/* offset into video buffer */
-
-	offset =  ((V_DOTS - 1 - y) & ~0x1) * ((H_DOTS / DOTS_PER_BYTE) / 2)
-				+ (x / DOTS_PER_BYTE);
-
-	if (!odd(y))
-		offset += 0x2000;
-
-	/* assume small data model & CGA card */
-	movblock(Scan_lines, _dsval, offset, 0xb800,
-			sizeof(Scan_lines));
+	scr_curs(x, y);
+	printf("%s", Scan_lines);
 }
 
 /*
@@ -138,17 +129,37 @@ unsigned x, y;
  *			   is to be visible or not.
  */
 void
-draw_box(visible, lo_x, lo_y, hi_x, hi_y)
-int visible;
-unsigned lo_x, lo_y, hi_x, hi_y;
+draw_box(int16_t visible, uint16_t lo_x, uint16_t lo_y, uint16_t hi_x, uint16_t hi_y)
 {
-	if (visible)
-		color('w');	/* foreground color */
-	else
-		color(0);	/* background color */
 
-	line(lo_x, lo_y, hi_x, lo_y);
-	lineto(hi_x, hi_y);
-	lineto(lo_x, hi_y);
-	lineto(lo_x, lo_y);
+	if (!visible) return;
+	
+	// horizontal, top
+	scr_curs(lo_x, hi_y);
+	printf("┌");
+	for (int i = lo_x + 1; i < hi_x - 1; i++) {
+		scr_curs(i, hi_y);
+		printf("─");
+	}
+	scr_curs(hi_x, hi_y);
+	printf("┐");
+	
+	// vertical
+	for (int i = lo_y + 1; i < hi_y; i++) {
+		scr_curs(lo_x, i);
+		printf("│");
+		scr_curs(hi_x, i);
+		printf("│");
+	}
+
+	// horizontal, bottom
+	scr_curs(lo_x, lo_y);
+	printf("└");
+	for (int i = lo_x + 1; i < hi_x - 1; i++) {
+		scr_curs(i, lo_y);
+		printf("─");
+	}
+	scr_curs(hi_x, lo_y);
+	printf("┘");
+
 }

@@ -13,7 +13,7 @@
  * definitions for setting up "monitor tubes" on the screen
  */
 typedef struct {
-	unsigned mt_x, mt_y;	/* display coords of 1st bit in 1st line in tube */
+	uint16_t mt_x, mt_y;	/* display coords of 1st bit in 1st line in tube */
 	LINE *mt_val;			/* pointer to values being displayed */
 } MONITOR_TUBE;
 
@@ -26,14 +26,11 @@ typedef struct {
 /* x-y coords for the 1st bits in the various tubes */
 /* Accumulator & Control Tubes are evenly spaced in the top half */
 /* of the display; the Store Tube is centered in the bottom half */
-#define A_X		((H_DOTS - 2*LINE_WIDTH)/3		\
-					- ((H_DOTS - 2*LINE_WIDTH)/3) % DOTS_PER_BYTE)
-#define A_Y		(3 * V_DOTS / 4)
-#define C_X		((H_DOTS - A_X - LINE_WIDTH)	\
-					- (H_DOTS - A_X - LINE_WIDTH) % DOTS_PER_BYTE)
-#define C_Y		(A_Y + 2)
-#define S_X		((H_DOTS - LINE_WIDTH)/2		\
-					- ((H_DOTS - LINE_WIDTH)/2) % DOTS_PER_BYTE)
-#define S_Y		(V_DOTS / 2)
+#define A_X		2
+#define A_Y		6
+#define C_X		36
+#define C_Y		6
+#define S_X		16
+#define S_Y		12
 
 extern MONITOR_TUBE monitors[];
